@@ -1,12 +1,11 @@
 package com.lambdaschool.sprint2.services;
 
-import com.lambdaschool.sprint2.models.Role;
-import com.lambdaschool.sprint2.models.User;
-import com.lambdaschool.sprint2.models.UserRoles;
-import com.lambdaschool.sprint2.models.Useremail;
+import com.lambdaschool.sprint2.models.*;
 import com.lambdaschool.sprint2.respositories.RoleRepository;
+import com.lambdaschool.sprint2.respositories.TodoRepository;
 import com.lambdaschool.sprint2.respositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.file.AccessDeniedException;
+import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
 
     @Autowired
     private RoleRepository rolerepos;
+
+    @Autowired
+    private TodoRepository todorepos;
 
     @Transactional
     @Override
@@ -113,14 +117,33 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
         }
         newUser.setUserroles(newRoles);
 
-        for (Useremail ue : user.getUseremails())
+        ArrayList<Todo> newTodos = new ArrayList<>();
+        for (Todo td : user.getTodos())
         {
-            newUser.getUseremails()
-                   .add(new Useremail(newUser,
-                                      ue.getUseremail()));
+            newTodos.add(new Todo(td.getDescription(),
+                                    td.getDatestarted(),
+                                      newUser));
         }
+        newUser.setTodos(newTodos);
 
         return userrepos.save(newUser);
+    }
+
+    @Transactional
+    @Override
+    public User addTodo(Todo todo)
+    {
+        Todo newTodo = new Todo();
+
+        ArrayList<Todo> newTodos = new ArrayList<>();
+        for (Todo td : user.getTodos())
+        {
+            newTodos.add(new Todo(td.getDescription(),
+                    td.getDatestarted(),
+                    newUser));
+        }
+        newUser.setTodos(newTodos);
+
     }
 
     @Transactional

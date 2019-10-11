@@ -1,5 +1,6 @@
 package com.lambdaschool.sprint2.controllers;
 
+import com.lambdaschool.sprint2.models.Todo;
 import com.lambdaschool.sprint2.models.User;
 import com.lambdaschool.sprint2.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,11 @@ public class UserController
     @Autowired
     private UserService userService;
 
-    // http://localhost:2019/users/mine/
+    // http://localhost:2019/users/users/
     @PreAuthorize("hasAuthority('ROLE_ADMIN')") // allows only admin
-    @GetMapping(value = "/mine",
+    @GetMapping(value = "/users",
                 produces = {"application/json"})
-    public ResponseEntity<?> loadUserByUsername()
+    public ResponseEntity<?> listAllUsers()
     {
         List<User> myUsers = userService.findAll();
         return new ResponseEntity<>(myUsers,
@@ -84,8 +85,10 @@ public class UserController
                                     HttpStatus.OK);
     }
 
-    // http://localhost:2019/users/getuserinfo  <---- for MVP
-    @GetMapping(value = "/getuserinfo",
+    //--------------------------------------------------------------------------
+
+    // http://localhost:2019/users/mine <------ ***** for MVP *****
+    @GetMapping(value = "/mine",
                 produces = {"application/json"})
     public ResponseEntity<?> getCurrentUserInfo(Authentication authentication)
     {
@@ -94,28 +97,13 @@ public class UserController
                                     HttpStatus.OK);
     }
 
-    // http://localhost:2019/users/user
-    //        {
-    //            "username": "Mojo",
-    //            "primaryemail": "mojo@lambdaschool.local",
-    //            "password" : "Coffee123",
-    //            "useremails": [
-    //            {
-    //                "useremail": "mojo@mymail.local"
-    //            },
-    //            {
-    //                "useremail": "mojo@mymail.local"
-    //            },
-    //            {
-    //                "useremail": "mojo@email.local"
-    //            }
-    //        ]
-    //        }
+    // http://localhost:2019/users/user <------ ***** for MVP *****
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(value = "/user",
                  consumes = {"application/json"},
                  produces = {"application/json"})
-    public ResponseEntity<?> addNewUser(@Valid
+    public ResponseEntity<?> addNewUser(HttpServletRequest request,
+                                        @Valid
                                         @RequestBody
                                                 User newuser) throws URISyntaxException
     {
@@ -134,6 +122,24 @@ public class UserController
                                     HttpStatus.CREATED);
     }
 
+//     http://localhost:2019/users/todo/7 <------ ***** for MVP *****
+    @PostMapping(value = "/todo/{userid}",
+                consumes = {"application.json"})
+//                produces = {"application/json"})
+    public ResponseEntity<?> addNewTodo(HttpServletRequest request,
+                                        @RequestBody
+                                                Todo newTodo,
+                                        @PathVariable
+                                                    long userid)
+    {
+        User u = userService.findUserById(userid);
+        newTodo = userService.save(newTodo);
+//        u.setTodos(u.getTodos(newTodo));
+
+        return new ResponseEntity<>(null,
+                HttpStatus.CREATED);
+    }
+    //--------------------------------------------------------------------------
 
     // http://localhost:2019/users/user/7
     //        {

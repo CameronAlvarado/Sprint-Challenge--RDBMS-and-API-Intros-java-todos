@@ -23,6 +23,7 @@ public class Todo extends Auditable
 
     private boolean completed;
 
+    @Id // <--- added
     @ManyToOne
     @JoinColumn(name = "userid",
             nullable = false)

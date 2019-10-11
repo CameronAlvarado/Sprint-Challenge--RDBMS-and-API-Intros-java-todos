@@ -84,15 +84,17 @@ public class TodoController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // http://localhost:2019/useremails/useremail/9/email/favbun@hops.local
-    @PutMapping("/todoid/{todoid}")
+
+    // http://localhost:2019/todos/todoid/9 <---- MVP
+    @PutMapping(value = "/todoid/{todoid}",
+            consumes = {"application.json"})
     public ResponseEntity<?> updateTodo(HttpServletRequest request,
                                             @PathVariable
-                                                long useremailid,
-                                             @PathVariable
+                                                long todoid,
+                                             @RequestBody
                                                      boolean bool)
-    {
-        todoService.update(useremailid, bool);
+    {   // setCompleted() ?
+        todoService.update(todoid, bool);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

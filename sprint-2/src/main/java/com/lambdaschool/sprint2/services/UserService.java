@@ -1,5 +1,6 @@
 package com.lambdaschool.sprint2.services;
 
+import com.lambdaschool.sprint2.models.Todo;
 import com.lambdaschool.sprint2.models.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,6 +21,8 @@ public interface UserService
     void delete(long id);
 
     User save(User user);
+
+    User addTodo(Todo todo);
 
     User update(User user,
                 long id,
