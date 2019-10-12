@@ -23,33 +23,33 @@ public class TodoController
     @Autowired
     TodoService todoService;
 
-    // http://localhost:2019/useremails/useremails
+    // http://localhost:2019/todos/todo
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping(value = "/useremails",
+    @GetMapping(value = "/todo",
                 produces = {"application/json"})
-    public ResponseEntity<?> listAllUseremails(HttpServletRequest request)
+    public ResponseEntity<?> listAllTodos(HttpServletRequest request)
     {
         logger.trace(request.getMethod()
                             .toUpperCase() + " " + request.getRequestURI() + " accessed");
 
-        List<Todo> allUserEmails = todoService.findAll();
-        return new ResponseEntity<>(allUserEmails,
+        List<Todo> allTodos = todoService.findAll();
+        return new ResponseEntity<>(allTodos,
                                     HttpStatus.OK);
     }
 
-    // http://localhost:2019/useremails/useremail/8
+    // http://localhost:2019/todos/todoid/8
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping(value = "/useremail/{useremailId}",
+    @GetMapping(value = "/todoid/{todoid}",
                 produces = {"application/json"})
     public ResponseEntity<?> getUserEmailById(HttpServletRequest request,
                                               @PathVariable
-                                                      Long useremailId)
+                                                      Long todoid)
     {
         logger.trace(request.getMethod()
                             .toUpperCase() + " " + request.getRequestURI() + " accessed");
 
-        Todo ue = todoService.findTodoById(useremailId);
-        return new ResponseEntity<>(ue,
+        Todo td = todoService.findTodoById(todoid);
+        return new ResponseEntity<>(td,
                                     HttpStatus.OK);
     }
 
@@ -85,15 +85,15 @@ public class TodoController
     }
 
 
-    // http://localhost:2019/todos/todoid/9 <---- MVP
+    // http://localhost:2019/todos/todoid/9 <---- MVP, is working
     @PutMapping(value = "/todoid/{todoid}",
-            consumes = {"application.json"})
+            consumes = {"application/json"})
     public ResponseEntity<?> updateTodo(HttpServletRequest request,
                                             @PathVariable
                                                 long todoid,
                                              @RequestBody
-                                                     boolean bool)
-    {   // setCompleted() ?
+                                                     Todo bool)
+    {
         todoService.update(todoid, bool);
         return new ResponseEntity<>(HttpStatus.OK);
     }

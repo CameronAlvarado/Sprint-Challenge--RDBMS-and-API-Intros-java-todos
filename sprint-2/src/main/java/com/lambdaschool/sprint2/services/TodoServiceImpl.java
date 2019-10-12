@@ -14,6 +14,7 @@ import java.util.List;
 @Service(value = "todoService")
 public class TodoServiceImpl implements TodoService
 {
+
     @Autowired
     private TodoRepository todorepos;
 
@@ -25,6 +26,7 @@ public class TodoServiceImpl implements TodoService
                       .iterator()
                       .forEachRemaining(list::add);
         return list;
+
     }
 
     @Override
@@ -76,30 +78,19 @@ public class TodoServiceImpl implements TodoService
         }
     }
 
+
     @Override
-    public Todo update(long todoid,
-//                            String description,
-                            boolean isCompleted)
+    public Todo update(long todoid, // <------- MVP, is working
+                            Todo boolJSON)
     {
-//        Authentication authentication = SecurityContextHolder.getContext()
-//                                                             .getAuthentication();
+
         if (todorepos.findById(todoid)
                           .isPresent())
         {
-//            if (todorepos.findById(todoid)
-//                              .get()
-//                              .getUser()
-//                              .getUsername();
-////                              .equalsIgnoreCase(authentication.getName()) || isAdmin)
-            {
                 Todo todo = findTodoById(todoid);
-//                todo.setDescription(description);
-                todo.setCompleted(isCompleted);
+                todo.setCompleted(boolJSON.isCompleted());
                 return todorepos.save(todo);
-            } /*else*/
-//            {
-//                throw new EntityNotFoundException(authentication.getName() + " not authorized to make change");
-//            }
+
         } else
         {
             throw new EntityNotFoundException("Todo with id " + todoid + " Not Found!");

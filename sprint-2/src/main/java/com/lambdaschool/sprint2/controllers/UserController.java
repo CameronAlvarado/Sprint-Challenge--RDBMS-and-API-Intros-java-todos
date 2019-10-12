@@ -28,80 +28,80 @@ public class UserController
     // http://localhost:2019/users/users/
     @PreAuthorize("hasAuthority('ROLE_ADMIN')") // allows only admin
     @GetMapping(value = "/users",
-                produces = {"application/json"})
+            produces = {"application/json"})
     public ResponseEntity<?> listAllUsers()
     {
         List<User> myUsers = userService.findAll();
         return new ResponseEntity<>(myUsers,
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     // http://localhost:2019/users/user/7
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/user/{userId}",
-                produces = {"application/json"})
+            produces = {"application/json"})
     public ResponseEntity<?> getUserById(
             @PathVariable
                     Long userId)
     {
         User u = userService.findUserById(userId);
         return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     // http://localhost:2019/users/user/name/cinnamon
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/user/name/{userName}",
-                produces = {"application/json"})
+            produces = {"application/json"})
     public ResponseEntity<?> getUserByName(
             @PathVariable
                     String userName)
     {
         User u = userService.findByName(userName);
         return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     // http://localhost:2019/users/user/name/like/da?sort=username
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(value = "/user/name/like/{userName}",
-                produces = {"application/json"})
+            produces = {"application/json"})
     public ResponseEntity<?> getUserLikeName(
             @PathVariable
                     String userName)
     {
         List<User> u = userService.findByNameContaining(userName);
         return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     // http://localhost:2019/users/getusername
     @GetMapping(value = "/getusername",
-                produces = {"application/json"})
+            produces = {"application/json"})
     @ResponseBody
     public ResponseEntity<?> getCurrentUserName(Authentication authentication)
     {
         return new ResponseEntity<>(authentication.getPrincipal(),
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
     //--------------------------------------------------------------------------
 
-    // http://localhost:2019/users/mine <------ ***** for MVP *****
+    // http://localhost:2019/users/mine <------ ***** for MVP, is working *****
     @GetMapping(value = "/mine",
-                produces = {"application/json"})
+            produces = {"application/json"})
     public ResponseEntity<?> getCurrentUserInfo(Authentication authentication)
     {
         User u = userService.findByName(authentication.getName());
         return new ResponseEntity<>(u,
-                                    HttpStatus.OK);
+                HttpStatus.OK);
     }
 
-    // http://localhost:2019/users/user <------ ***** for MVP *****
+    // http://localhost:2019/users/user <------ ***** for MVP, is working *****
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @PostMapping(value = "/user",
-                 consumes = {"application/json"},
-                 produces = {"application/json"})
+            consumes = {"application/json"},
+            produces = {"application/json"})
     public ResponseEntity<?> addNewUser(HttpServletRequest request,
                                         @Valid
                                         @RequestBody
@@ -112,32 +112,28 @@ public class UserController
         // set the location header for the newly created resource
         HttpHeaders responseHeaders = new HttpHeaders();
         URI newUserURI = ServletUriComponentsBuilder.fromCurrentRequest()
-                                                    .path("/{userid}")
-                                                    .buildAndExpand(newuser.getUserid())
-                                                    .toUri();
+                .path("/{userid}")
+                .buildAndExpand(newuser.getUserid())
+                .toUri();
         responseHeaders.setLocation(newUserURI);
 
         return new ResponseEntity<>(null,
-                                    responseHeaders,
-                                    HttpStatus.CREATED);
+                responseHeaders,
+                HttpStatus.CREATED);
     }
 
-//     http://localhost:2019/users/todo/7 <------ ***** for MVP *****
-    @PostMapping(value = "/todo/{userid}",
-                consumes = {"application.json"})
-//                produces = {"application/json"})
-    public ResponseEntity<?> addNewTodo(HttpServletRequest request,
+//         http://localhost:2019/users/todoid/14 <------ for MVP
+    @PostMapping(value = "/todoid/{userid}",
+            consumes = {"application/json"})
+//            produces = {"application/json"})
+    public ResponseEntity<?> addNewTodo(@PathVariable
+                                                Long userid, // <------ was long.
                                         @RequestBody
-                                                Todo newTodo,
-                                        @PathVariable
-                                                    long userid)
+                                                Todo todoJSON)
     {
-        User u = userService.findUserById(userid);
-        newTodo = userService.save(newTodo);
-//        u.setTodos(u.getTodos(newTodo));
 
-        return new ResponseEntity<>(null,
-                HttpStatus.CREATED);
+        userService.addTodo(userid, todoJSON);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
     //--------------------------------------------------------------------------
 
@@ -158,6 +154,7 @@ public class UserController
     //            }
     //        ]
     //        }
+    // http://localhost:2019/users/user/7
     @PutMapping(value = "/user/{id}")
     public ResponseEntity<?> updateUser(HttpServletRequest request,
                                         @RequestBody
@@ -166,8 +163,8 @@ public class UserController
                                                 long id)
     {
         userService.update(updateUser,
-                           id,
-                           request.isUserInRole("ADMIN"));
+                id,
+                request.isUserInRole("ADMIN"));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -183,17 +180,14 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // http://localhost:2019/users/user/15/role/2
+    // http://localhost:2019/users/userid/15/ <------ MVP working?
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @DeleteMapping("/user/{userid}/role/{roleid}")
-    public ResponseEntity<?> deleteUserRoleByIds(
+    @DeleteMapping("/userid/{userid}")
+    public ResponseEntity<?> deleteUserByIds(
             @PathVariable
-                    long userid,
-            @PathVariable
-                    long roleid)
+                    long userid)
     {
-        userService.deleteUserRole(userid,
-                                   roleid);
+        userService.delete(userid);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -209,7 +203,7 @@ public class UserController
                     long roleid)
     {
         userService.addUserRole(userid,
-                                roleid);
+                roleid);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

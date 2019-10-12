@@ -17,7 +17,6 @@ public interface TodoService
                 boolean isAdmin);
 
     Todo update(long todoid,
-                     boolean isCompleted);
+                Todo boolJSON);
 
-    // note emails are added through the user process
 }

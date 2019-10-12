@@ -23,7 +23,6 @@ public class Todo extends Auditable
 
     private boolean completed;
 
-    @Id // <--- added
     @ManyToOne
     @JoinColumn(name = "userid",
             nullable = false)
@@ -34,11 +33,16 @@ public class Todo extends Auditable
     {
     }
 
-    public Todo(String description, Date datestarted,/* boolean completed,*/ User user)
+    public Todo(String description, Date datestarted)
     {
         this.description = description;
         this.datestarted = datestarted;
-//        this.completed = completed;
+    }
+
+    public Todo(String description, Date datestarted, User user)
+    {
+        this.description = description;
+        this.datestarted = datestarted;
         this.user = user;
     }
 
@@ -90,11 +94,5 @@ public class Todo extends Auditable
     public void setUser(User user)
     {
         this.user = user;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "Useremail{" + "todoid=" + todoid + ", description='" + description + '\'' + ", user=" + user.getUsername() + '}';
     }
 }

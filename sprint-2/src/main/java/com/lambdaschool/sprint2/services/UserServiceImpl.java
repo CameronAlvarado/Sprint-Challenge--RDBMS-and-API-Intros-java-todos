@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.nio.file.AccessDeniedException;
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Date;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, // used by auth
@@ -93,7 +91,7 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
 
     @Transactional
     @Override
-    public User save(User user)
+    public User save(User user) // <------ MVP
     {
         if (userrepos.findByUsername(user.getUsername()) != null)
         {
@@ -121,8 +119,8 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
         for (Todo td : user.getTodos())
         {
             newTodos.add(new Todo(td.getDescription(),
-                                    td.getDatestarted(),
-                                      newUser));
+                    td.getDatestarted(),
+                    newUser));
         }
         newUser.setTodos(newTodos);
 
@@ -131,19 +129,26 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
 
     @Transactional
     @Override
-    public User addTodo(Todo todo)
+    public User addTodo(long userid, Todo todoJSON) // <------ MVP
     {
-        Todo newTodo = new Todo();
 
-        ArrayList<Todo> newTodos = new ArrayList<>();
-        for (Todo td : user.getTodos())
-        {
-            newTodos.add(new Todo(td.getDescription(),
-                    td.getDatestarted(),
-                    newUser));
-        }
-        newUser.setTodos(newTodos);
+        User userSelect = findUserById(userid);
+        List<Todo> newTodos = new ArrayList<>();
+        newTodos.add(new Todo(todoJSON.getDescription(), todoJSON.getDatestarted(), todoJSON.getUser()));
+        userSelect.setTodos(newTodos);
+        return userrepos.save(userSelect);
 
+
+//        User selectUser = findUserById(userid);
+//        List<Todo> newTodos = new ArrayList<>();
+//        for (Todo td : selectUser.getTodos())
+//    {
+//        newTodos.add(new Todo(td.getDescription(),
+//                td.getDatestarted(),
+//                selectUser));
+//    }
+//        selectUser.setTodos(newTodos);
+//        return userrepos.save(selectUser);
     }
 
     @Transactional
