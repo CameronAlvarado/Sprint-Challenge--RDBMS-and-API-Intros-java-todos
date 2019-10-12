@@ -22,7 +22,7 @@ public interface UserService
 
     User save(User user);
 
-    User addTodo(long userid, Todo todoJSON);
+    Todo addTodo(long userid, Todo todoJSON);
 
     User update(User user,
                 long id,

@@ -180,7 +180,7 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // http://localhost:2019/users/userid/15/ <------ MVP working?
+    // http://localhost:2019/users/userid/14/ <------ MVP working?
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/userid/{userid}")
     public ResponseEntity<?> deleteUserByIds(

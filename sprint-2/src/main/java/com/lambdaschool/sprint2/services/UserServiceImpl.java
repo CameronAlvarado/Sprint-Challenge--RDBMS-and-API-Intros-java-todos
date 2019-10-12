@@ -5,7 +5,6 @@ import com.lambdaschool.sprint2.respositories.RoleRepository;
 import com.lambdaschool.sprint2.respositories.TodoRepository;
 import com.lambdaschool.sprint2.respositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.AccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, // used by auth
@@ -129,26 +127,15 @@ public class UserServiceImpl implements UserDetailsService, // used by auth
 
     @Transactional
     @Override
-    public User addTodo(long userid, Todo todoJSON) // <------ MVP
+    public Todo addTodo(long userid, Todo todoJSON) // <------ MVP, is working
     {
-
+        Todo newTodo = new Todo();
         User userSelect = findUserById(userid);
-        List<Todo> newTodos = new ArrayList<>();
-        newTodos.add(new Todo(todoJSON.getDescription(), todoJSON.getDatestarted(), todoJSON.getUser()));
-        userSelect.setTodos(newTodos);
-        return userrepos.save(userSelect);
+        newTodo.setDescription(todoJSON.getDescription());
+        newTodo.setDatestarted(todoJSON.getDatestarted());
+        newTodo.setUser(userSelect);
+        return todorepos.save(newTodo);
 
-
-//        User selectUser = findUserById(userid);
-//        List<Todo> newTodos = new ArrayList<>();
-//        for (Todo td : selectUser.getTodos())
-//    {
-//        newTodos.add(new Todo(td.getDescription(),
-//                td.getDatestarted(),
-//                selectUser));
-//    }
-//        selectUser.setTodos(newTodos);
-//        return userrepos.save(selectUser);
     }
 
     @Transactional
